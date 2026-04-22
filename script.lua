@@ -1,0 +1,6 @@
+vanilla_model.ALL:setVisible(false)
+vanilla_model.ALL:setScale(0, 0, 0)
+vanilla_model.HEAD:setScale(1, 1, 1)
+vanilla_model.RIGHT_ITEM:setVisible(true)
+vanilla_model.RIGHT_ITEM:setScale(1, 1, 1)
+vanilla_model.HELMET_ITEM:setVisible(false)
