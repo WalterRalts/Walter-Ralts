@@ -429,37 +429,35 @@ end
 
 
 function events.render(delta, context)
-local hudVisible = client:isHudEnabled()
-local localFirstPerson = false
-if host:isHost() then
-local firstPersonByContext = context == "FIRST_PERSON"
-local firstPersonByRenderer = renderer.isFirstPerson and renderer:isFirstPerson() or false
-localFirstPerson = firstPersonByContext or firstPersonByRenderer
+      local hudVisible = client:isHudEnabled()
+      local localFirstPerson = false
+      if host:isHost() then
+            local firstPersonByContext = context == "FIRST_PERSON"
+            local firstPersonByRenderer = renderer.isFirstPerson and renderer:isFirstPerson() or false
+            localFirstPerson = firstPersonByContext or firstPersonByRenderer
+            if not localFirstPerson then
+                  local camPos = client:getCameraPos()
+                  local p = player:getPos(delta)
+                  local eyeY = p.y + player:getEyeHeight()
+                  local dx = camPos.x - p.x
+                  local dy = camPos.y - eyeY
+                  local dz = camPos.z - p.z
+                  localFirstPerson = (dx * dx + dy * dy + dz * dz) < 0.04
+            end
+      end
+      local thirdPersonAllowed = (not host:isHost()) or CONFIG.showInThirdPerson or localFirstPerson
+      local showNameplate = hudVisible and not localFirstPerson and thirdPersonAllowed
+      nameplatePart:setVisible(showNameplate)
+      if not showNameplate then return end
+            local p = player:getPos(delta)
+            nameplatePart:setPos(p.x * 16, p.y * 16 + CONFIG.verticalOffset, p.z * 16)
 
 
-if not localFirstPerson then
-local camPos = client:getCameraPos()
-local p = player:getPos(delta)
-local eyeY = p.y + player:getEyeHeight()
-local dx = camPos.x - p.x
-local dy = camPos.y - eyeY
-local dz = camPos.z - p.z
-localFirstPerson = (dx * dx + dy * dy + dz * dz) < 0.04
-end
-end
-local thirdPersonAllowed = (not host:isHost()) or CONFIG.showInThirdPerson or localFirstPerson
-local showNameplate = hudVisible and not localFirstPerson and thirdPersonAllowed
-nameplatePart:setVisible(showNameplate)
-if not showNameplate then return end
-local p = player:getPos(delta)
-nameplatePart:setPos(p.x * 16, p.y * 16 + CONFIG.verticalOffset, p.z * 16)
+            local camYaw = client:getCameraRot().y
+            local billboard = -camYaw
 
-
-local camYaw = client:getCameraRot().y
-local billboard = -camYaw
-
-nameplatePart:setRot(0, billboard, 0)
-end
+            nameplatePart:setRot(0, billboard, 0)
+      end
 
 
 
