@@ -20,18 +20,14 @@ function events.ON_PLAY_SOUND(id, pos, vol, pitch, loop, category, path)
             local dist = (plr:getPos() - pos):length()
             if dist < nearest then nearest,uuid = dist,plr:getUUID() end
       end
-      if id == "minecraft:entity.item.pickup" then
-            sounds:playSound("DUN_Item", pos, vol, 1 , false)
-            return true
-      end
-      if player:getUUID() ~= uuid or nearest > 0.8 then return end -- don't trigger if the sound isn't near you
+      if player:getUUID() ~= uuid or nearest > 1.2 then return end -- don't trigger if the sound isn't near you
 
       ---------------------------------------------------------
       -- actual replacing starts here, feel free to edit below:
       
       if id == "minecraft:entity.item.pickup" then
-            log("Hi")
-            sounds:playSound("DUN_Item", pos, vol, 2, false)
+            sounds:playSound("DUN_Item", pos, vol, 1 , false)
+            return true
       end
       if id:find(".step") then
             if player:isSprinting() then
@@ -44,5 +40,3 @@ function events.ON_PLAY_SOUND(id, pos, vol, pitch, loop, category, path)
             return true
       end
 end
-
-events.

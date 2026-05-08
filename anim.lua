@@ -29,7 +29,7 @@ function events.tick()
       local sleeping = player:getPose() == "SLEEPING"
       local flying = player:getPose() == "FALL_FLYING"
       local jumping = player:getVelocity().y > 0
-      local walking = player:getVelocity().xz:length() >= .01 and player:getVelocity().xz:length() < 0.23 and not riding
+      local walking = player:getVelocity().xz:length() >= .01 and not sprinting and not riding
       local hungry = player:getFood() <= 7
       local healing = player:getSaturation() > 0 and player:getHealth() < player:getMaxHealth() and player:getFood() > 18
       local hand = player:isLeftHanded()
