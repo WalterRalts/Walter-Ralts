@@ -51,15 +51,15 @@ function events.tick()
       local idle = not leg_move and not charge_action and not mining and not fishing and not riding
       local empty_hands = not holding_block and not holding_food
       if not ActionActive and not DancingActive then
-            --log(idle)
-            animations.Walterv5.ground_holding_idle:setPlaying(holding_block and not battle and not swimming)
+            log(idle, animations:getAnimations())
+            animations.Walterv5.ground_holding_idle:setPlaying(holding_block and idle and not battle and not swimming)
             animations.Walterv5.ground_holding_walk:setPlaying(holding_block and walking and not swimming)
             animations.Walterv5.ground_holding_run:setPlaying(holding_block and sprinting and not swimming)
             animations.Walterv5.ground_rain_idle:setPlaying(idle and not holding_block and not battle and in_rain)
             animations.Walterv5.ground_rain_walk:setPlaying(walking and not holding_block and in_rain)
             animations.Walterv5.ground_rain_run:setPlaying(sprinting and not holding_block and in_rain)
             animations.Walterv5.ground_idle:setPlaying(idle and not holding_block and not in_water and not battle and not swimming and not in_rain)
-            animations.Walterv5.ground_walk:setPlaying(walking and not holding_block and not swimming and not mining and not in_rain)
+            animations.Walterv5.ground_walk:setPlaying(walking and not holding_block and not swimming and not mining and not in_rain and not battle)
             animations.Walterv5.ground_run:setPlaying(sprinting and not holding_block and not swimming and not mining and not in_rain)
 
             if not sprinting then
@@ -72,7 +72,8 @@ function events.tick()
             animations.Walterv5.crouching:setPlaying(crouching)
             animations.Walterv5.mining:setPlaying(mining)
 
-            animations.Walterv5.battle_idle:setPlaying(battle and not crouching)
+            animations.Walterv5.battle_idle:setPlaying(battle and not crouching and idle)
+            animations.Walterv5.battle_walk:setPlaying(battle and not crouching and walking and not idle)
             if riding then
                   models.Walterv5.ralts:setPos(0, 8, 0)
             else
