@@ -21,20 +21,24 @@ function events.tick()
       local riding = player:getVehicle() ~= nil
       local in_boat = riding and player:getVehicle():getName():find("Boat") ~= nil
       local rowing = in_boat and player:getVelocity().xyz:length() > 0
-      
+      --ground actions
       local crouching = player:getPose() == "CROUCHING"
       local sprinting = player:isSprinting() and player:getVelocity().xz:length() >= 0.23
+      local walking = player:getVelocity().xz:length() >= .01 and not sprinting and not riding
+      local climbing = player:isClimbing()
+      --ground moving
+      
       local blocking = player:isBlocking()
       local fishing = player:isFishing()
       local sleeping = player:getPose() == "SLEEPING"
       local flying = player:getPose() == "FALL_FLYING"
       local jumping = player:getVelocity().y > 0
-      local walking = player:getVelocity().xz:length() >= .01 and not sprinting and not riding
+      
       local hungry = player:getFood() <= 7
       local healing = player:getSaturation() > 0 and player:getHealth() < player:getMaxHealth() and player:getFood() > 18
       local hand = player:isLeftHanded()
       local holding_block = player:getHeldItem(hand):isBlockItem()
-      local holding_food = player:getHeldItem(hand):isFood()
+      local holding_food = player:getHeldItem(hand):isFood() and not holding_block
       local holding_item = player:getHeldItem(hand) and not player:getHeldItem(hand):isBlockItem()
       local shielding = player:isBlocking()
       local charging = player:getActiveItem():getUseAction() == "BOW"
@@ -42,26 +46,30 @@ function events.tick()
       local jousting = player:getActiveItem():getUseAction() == "SPEAR"
       local in_rain = player:isInRain()
       local in_water = player:isInWater()
+      local in_air = not player:isOnGround()
+      
       local mining = player:getSwingArm() ~= nil
       local battle = player:getHeldItem(hand).id:find('sword') ~= nil
       local swimming = player:getPose() == "SWIMMING"
 
+      --COMBOS!
       local charge_action = nom or jousting or charging
       local leg_move = crouching or sprinting or walking or swimming
-      local idle = not leg_move and not charge_action and not mining and not fishing and not riding
+      local idle = not leg_move and not charge_action and not mining and not fishing and not riding and not in_air
       local empty_hands = not holding_block and not holding_food
       if not ActionActive and not DancingActive then
             --log(idle)
-            animations.Walterv5.ground_holding_idle:setPlaying(holding_block and not battle and not swimming)
+            animations.Walterv5.air_idle:setPlaying(in_air and not battle and not swimming and not sprinting and not climbing)
+            animations.Walterv5.ground_holding_idle:setPlaying(holding_block and not battle and not swimming and not sprinting)
             animations.Walterv5.ground_holding_walk:setPlaying(holding_block and walking and not swimming)
             animations.Walterv5.ground_holding_run:setPlaying(holding_block and sprinting and not swimming)
             animations.Walterv5.ground_rain_idle:setPlaying(idle and not holding_block and not battle and in_rain)
             animations.Walterv5.ground_rain_walk:setPlaying(walking and not holding_block and in_rain)
             animations.Walterv5.ground_rain_run:setPlaying(sprinting and not holding_block and in_rain)
-            animations.Walterv5.ground_idle:setPlaying(idle and not holding_block and not in_water and not battle and not swimming and not in_rain)
-            animations.Walterv5.ground_walk:setPlaying(walking and not holding_block and not swimming and not mining and not in_rain)
+            animations.Walterv5.ground_idle:setPlaying(idle and not holding_food and not holding_block and not in_water and not battle and not swimming and not in_rain)
+            animations.Walterv5.ground_walk:setPlaying(walking and not holding_block and not swimming and not mining and not in_rain and not battle)
             animations.Walterv5.ground_run:setPlaying(sprinting and not holding_block and not swimming and not mining and not in_rain)
-
+            animations.Walterv5.food_idle:setPlaying(holding_food and idle)
             if not sprinting then
                   animations.Walterv5.ground_rain_run:stop()
                   animations.Walterv5.ground_run:stop()
@@ -72,7 +80,8 @@ function events.tick()
             animations.Walterv5.crouching:setPlaying(crouching)
             animations.Walterv5.mining:setPlaying(mining)
 
-            animations.Walterv5.battle_idle:setPlaying(battle and not crouching)
+            animations.Walterv5.battle_idle:setPlaying(battle and not crouching and idle)
+            animations.Walterv5.battle_walk:setPlaying(battle and not crouching and walking and not idle)
             if riding then
                   models.Walterv5.ralts:setPos(0, 8, 0)
             else
