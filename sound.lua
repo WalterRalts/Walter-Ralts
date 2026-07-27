@@ -17,6 +17,10 @@ end
 --thanks to Ma nu e ru
 function events.on_play_sound(id, pos, vol, pitch, loop, category, path)
       if not path then return end -- don't trigger if the sound was played by figura (prevent infinite loop)
+      if id == "minecraft:entity.item.pickup" then
+            sounds:playSound("DUN_Item", pos, vol, 1 , false)
+            return true
+      end
       if not player:isLoaded() then return end -- don't trigger if the player isn't loaded
       local nearest, uuid = math.huge -- we will find the nearest player to the sound location
       for _, plr in pairs(world.getPlayers()) do
