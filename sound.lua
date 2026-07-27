@@ -1,3 +1,6 @@
+Cooldown = 0
+ItemPickup = false
+
 function events.tick()
       local hungry = player:getFood() <= 7
       local hungry_time = 0
@@ -12,7 +15,7 @@ function events.tick()
 end
 
 --thanks to Ma nu e ru
-function events.ON_PLAY_SOUND(id, pos, vol, pitch, loop, category, path)
+function events.on_play_sound(id, pos, vol, pitch, loop, category, path)
       if not path then return end -- don't trigger if the sound was played by figura (prevent infinite loop)
       if id == "minecraft:entity.item.pickup" then
             sounds:playSound("DUN_Item", pos, vol, 1 , false)
@@ -25,20 +28,33 @@ function events.ON_PLAY_SOUND(id, pos, vol, pitch, loop, category, path)
             if dist < nearest then nearest,uuid = dist,plr:getUUID() end
       end
       
-      if player:getUUID() ~= uuid or nearest > 1.2 then return end -- don't trigger if the sound isn't near you
-
+      if player:getUUID() ~= uuid or nearest > 3 then return end -- don't trigger if the sound isn't near you
       ---------------------------------------------------------
       -- actual replacing starts here, feel free to edit below:
-      
-      
+      if id == "minecraft:entity.item.pickup" then
+            if ItemPickup then
+                  sounds:playSound("DUN_Item", pos, vol, 1 , false)
+                  ItemPickup = false
+            end
+            return true
+      end
       if id:find(".step") then
             if player:isSprinting() then
-                  if math.random(1, 5) == 1 then
-                        --sounds:playSound("minecraft:block.azalea_leaves.fall", pos, vol, pitch)
-                  end
             else
                   --sounds:playSound("minecraft:block.bubble_column.bubble_pop", pos, vol, pitch)
             end
             return true
       end
+end
+
+function events.tick()
+      if not ItemPickup then
+            if Cooldown < 25 then
+                  Cooldown = Cooldown + 1
+            else
+                  Cooldown = 0
+                  ItemPickup = true
+            end
+      end
+      --log(ItemPickup, Cooldown)
 end

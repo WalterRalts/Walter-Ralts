@@ -1,8 +1,14 @@
+local function stop_idle()
+      animations.Walterv5.ground_holding_idle:stop()
+      animations.Walterv5.food_idle:stop()
+      animations.Walterv5.ground_idle:stop()
+      animations.Walterv5.air_idle:stop()
+end
+
 local mainPage = action_wheel:newPage("Basic")
 action_wheel:setPage(mainPage)
 
 function events.ENTITY_INIT()
-      ActionActive = false
       DancingActive = false
 end
 
@@ -15,11 +21,10 @@ local function playSoundRadius(radius, sound, position, volume, pitch, loop)
       local pos = target+dir:normalized()*10
       sounds:playSound(sound, pos, vol, pitch, loop)
 end
+
 function pings.helloWorld()
-      animations.Walterv5.ground_holding_idle:stop()
-      animations.Walterv5.ground_idle:stop()
       idle_time = 0
-      ActionActive = true
+      stop_idle()
       animations.Walterv5.wave:play()
       animations.Walterv5.talk:play()
       playSoundRadius(15, "WalterGreet", player:getPos(), 1, 1, false)
@@ -32,8 +37,7 @@ wave:onLeftClick(function()
 end)
 
 function pings.shimmy()
-      animations.Walterv5.ground_holding_idle:stop()
-      animations.Walterv5.ground_idle:stop()
+      stop_idle()
       idle_time = 0
       DancingActive = true
       animations.Walterv5.dance1:play()
@@ -60,4 +64,29 @@ hatonoff:setTitle("Hat Toggle")
 hatonoff:setItem("minecraft:leather_helmet")
 hatonoff:onLeftClick(function()
       pings.hatonoff()
+end)
+
+function pings.bow()
+      stop_idle()
+      idle_time = 0
+      animations.Walterv5.bow:play()
+end
+local bow = mainPage:newAction()
+bow:setTitle("Bow")
+bow:setItem("minecraft:bow")
+bow:onLeftClick(function()
+      pings.bow()
+end)
+
+function pings.guildmaster()
+      stop_idle()
+      idle_time = 0
+      DancingActive = true
+      animations.Walterv5.penello:play()
+end
+local guildmaster = mainPage:newAction()
+guildmaster:setTitle("Copy the guildmaster!")
+guildmaster:setItem("minecraft:acacia_log")
+guildmaster:onLeftClick(function()
+      pings.guildmaster()
 end)
