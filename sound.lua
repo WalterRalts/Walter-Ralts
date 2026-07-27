@@ -24,7 +24,7 @@ function events.on_play_sound(id, pos, vol, pitch, loop, category, path)
             if dist < nearest then nearest,uuid = dist,plr:getUUID() end
       end
       
-      if player:getUUID() ~= uuid or nearest > 2 then return end -- don't trigger if the sound isn't near you
+      if player:getUUID() ~= uuid or nearest > 3 then return end -- don't trigger if the sound isn't near you
       ---------------------------------------------------------
       -- actual replacing starts here, feel free to edit below:
       if id == "minecraft:entity.item.pickup" then
@@ -36,9 +36,6 @@ function events.on_play_sound(id, pos, vol, pitch, loop, category, path)
       end
       if id:find(".step") then
             if player:isSprinting() then
-                  if math.random(1, 5) == 1 then
-                        --sounds:playSound("minecraft:block.azalea_leaves.fall", pos, vol, pitch)
-                  end
             else
                   --sounds:playSound("minecraft:block.bubble_column.bubble_pop", pos, vol, pitch)
             end

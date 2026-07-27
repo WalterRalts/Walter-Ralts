@@ -5,8 +5,9 @@ local blink_time = 0
 local blink_signal = math.random(30, 250)
 local hold = 0
 
-local bag = models.Walterv5.ralts.body.torso.Backpack
-local head = models.Walterv5.ralts.body.torso.chest.header
+local walter = models.Walterv5.ralts
+local bag = walter.body.torso.Backpack
+local head = walter.body.torso.chest.header
 function events.tick()
       local bags = player:getNbt()["fabric:attachments"]["accessories:inventory_holder"]["accessories_containers"]["back"]["items"]
       if bags[1] and bags[1]["id"]:find("backpack") then
@@ -23,7 +24,7 @@ function events.tick()
       local rowing = in_boat and player:getVelocity().xyz:length() > 0
       --ground actions
       local crouching = player:getPose() == "CROUCHING"
-      local sprinting = player:isSprinting() and player:getVelocity().xz:length() >= 0.23
+      local sprinting = player:isSprinting() and player:getVelocity().xz:length() >= 0.23 and not riding
       local walking = player:getVelocity().xz:length() >= .01 and not sprinting and not riding
       local climbing = player:isClimbing()
       --ground moving
@@ -33,61 +34,64 @@ function events.tick()
       local sleeping = player:getPose() == "SLEEPING"
       local flying = player:getPose() == "FALL_FLYING"
       local jumping = player:getVelocity().y > 0
+
+      local in_rain = player:isInRain()
+      local in_water = player:isInWater()
+      local in_air = not player:isOnGround()
       
       local hungry = player:getFood() <= 7
       local healing = player:getSaturation() > 0 and player:getHealth() < player:getMaxHealth() and player:getFood() > 18
       local hand = player:isLeftHanded()
-      local holding_block = player:getHeldItem(hand):isBlockItem()
-      local holding_food = player:getHeldItem(hand):isFood() and not holding_block
+      local holding_block = player:getHeldItem(hand):isBlockItem() and not in_rain
+      local holding_food = player:getHeldItem(hand):isFood() and not holding_block and not in_rain
       local holding_item = player:getHeldItem(hand) and not player:getHeldItem(hand):isBlockItem()
       local shielding = player:isBlocking()
       local charging = player:getActiveItem():getUseAction() == "BOW"
       local nom = player:getActiveItem():getUseAction() == "EAT"
       local jousting = player:getActiveItem():getUseAction() == "SPEAR"
-      local in_rain = player:isInRain()
-      local in_water = player:isInWater()
-      local in_air = not player:isOnGround()
+      
       
       local mining = player:getSwingArm() ~= nil
       local battle = player:getHeldItem(hand).id:find('sword') ~= nil
       local swimming = player:getPose() == "SWIMMING"
+      --log(animations:getPlaying()[1], animations:getPlaying()[2], animations:getPlaying()[3])
 
       --COMBOS!
       local charge_action = nom or jousting or charging
-      local leg_move = crouching or sprinting or walking or swimming
+      local leg_move = sprinting or walking or swimming
       local idle = not leg_move and not charge_action and not mining and not fishing and not riding and not in_air
       local empty_hands = not holding_block and not holding_food
-      if not ActionActive and not DancingActive then
-            --log(idle)
-            animations.Walterv5.air_idle:setPlaying(in_air and not battle and not swimming and not sprinting and not climbing)
-            animations.Walterv5.ground_holding_idle:setPlaying(holding_block and not battle and not swimming and not sprinting)
+      if animations:getPlaying()[1] ~= animations.Walterv5.bow and animations:getPlaying()[1] ~= animations.Walterv5.wave and animations:getPlaying()[1] ~= animations.Walterv5.talk and animations:getPlaying()[1] ~= animations.Walterv5.penello and not DancingActive then
+            animations.Walterv5.air_idle:setPlaying(in_air and not battle and not swimming and not sprinting and not climbing and not riding)
+            animations.Walterv5.ground_holding_idle:setPlaying(holding_block and idle and not battle and not swimming and not sprinting)
             animations.Walterv5.ground_holding_walk:setPlaying(holding_block and walking and not swimming)
             animations.Walterv5.ground_holding_run:setPlaying(holding_block and sprinting and not swimming)
-            animations.Walterv5.ground_rain_idle:setPlaying(idle and not holding_block and not battle and in_rain)
-            animations.Walterv5.ground_rain_walk:setPlaying(walking and not holding_block and in_rain)
-            animations.Walterv5.ground_rain_run:setPlaying(sprinting and not holding_block and in_rain)
-            animations.Walterv5.ground_idle:setPlaying(idle and not holding_food and not holding_block and not in_water and not battle and not swimming and not in_rain)
-            animations.Walterv5.ground_walk:setPlaying(walking and not holding_block and not swimming and not mining and not in_rain and not battle)
+            animations.Walterv5.ground_rain_idle:setPlaying(idle and in_rain)
+            animations.Walterv5.ground_rain_walk:setPlaying(walking and in_rain and not crouching)
+            animations.Walterv5.ground_rain_run:setPlaying(sprinting and in_rain)
+            animations.Walterv5.ground_idle:setPlaying(idle and not crouching and not holding_food and not holding_block and not in_water and not battle and not swimming and not in_rain)
+            animations.Walterv5.ground_walk:setPlaying(walking and not crouching and not holding_block and not swimming and not mining and not in_rain and not battle)
             animations.Walterv5.ground_run:setPlaying(sprinting and not holding_block and not swimming and not mining and not in_rain)
             animations.Walterv5.food_idle:setPlaying(holding_food and idle)
+            animations.Walterv5.eat:setPlaying(nom)
             if not sprinting then
                   animations.Walterv5.ground_rain_run:stop()
                   animations.Walterv5.ground_run:stop()
                   animations.Walterv5.ground_holding_run:stop()
             end
-            
+            animations.Walterv5.ride:setPlaying(riding)
             animations.Walterv5.wade:setPlaying(idle and not holding_block and in_water)
-            animations.Walterv5.crouching:setPlaying(crouching)
+            animations.Walterv5.crouching:setPlaying(crouching and idle)
+            animations.Walterv5.crouch_walk:setPlaying(crouching and walking)
             animations.Walterv5.mining:setPlaying(mining)
 
             animations.Walterv5.battle_idle:setPlaying(battle and not crouching and idle)
             animations.Walterv5.battle_walk:setPlaying(battle and not crouching and walking and not idle)
             if riding then
-                  models.Walterv5.ralts:setPos(0, 8, 0)
+                  walter:setPos(0, 8, 0)
             else
-                  models.Walterv5.ralts:setPos(0, 0, 0)
+                  walter:setPos(0, 0, 0)
             end
-            animations.Walterv5.ride:setPlaying(riding)
             
             animations.Walterv5.sleep:setPlaying(sleeping)
             animations.Walterv5.swim:setPlaying(swimming)
@@ -137,19 +141,23 @@ function events.tick()
                         healpart = 0
                   end
             end
-      else
-            --log(hold, walking)
+      elseif animations:getPlaying()[1] ~= nil then
+            animations.Walterv5.ground_holding_idle:stop()
+            animations.Walterv5.food_idle:stop()
+            animations.Walterv5.ground_idle:stop()
             if hold < 58 then
                   hold = hold + 1
                   if walking then
                         animations.Walterv5.dance1:stop()
+                        animations.Walterv5.penello:stop()
                         DancingActive = false
                         animations.Walterv5.ground_idle:play()
                   end
             else
-                  ActionActive = false
                   hold = 0
             end
+      else
+            animations.Walterv5.ground_idle:play()
       end
 
       if not idle then
