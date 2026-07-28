@@ -33,15 +33,8 @@ function events.on_play_sound(id, pos, vol, pitch, loop, category, path)
       -- actual replacing starts here, feel free to edit below:
       if id == "minecraft:entity.item.pickup" then
             if ItemPickup then
-                  sounds:playSound("DUN_Item", pos, vol, 1 , false)
                   ItemPickup = false
-            end
-            return true
-      end
-      if id:find(".step") then
-            if player:isSprinting() then
-            else
-                  --sounds:playSound("minecraft:block.bubble_column.bubble_pop", pos, vol, pitch)
+                  sounds:playSound("DUN_Item", pos, vol, 1 , false)
             end
             return true
       end
@@ -56,5 +49,5 @@ function events.tick()
                   ItemPickup = true
             end
       end
-      --log(ItemPickup, Cooldown)
+      log(ItemPickup, Cooldown)
 end
